@@ -1,8 +1,7 @@
-# Floating Text Overlay
 
 A lightweight Obsidian plugin that lets you create draggable floating notes anywhere on your document without modifying the original Markdown content.
 
-![GitHub release](https://img.shields.io/github/v/release/liaoqiuyi681-blip/floating-text-overlay)
+![GitHub release|93](https://img.shields.io/github/v/release/liaoqiuyi681-blip/floating-text-overlay)
 ![License](https://img.shields.io/github/license/liaoqiuyi681-blip/floating-text-overlay)
 
 ---
@@ -29,7 +28,7 @@ Create floating note widgets anywhere in the current note.
 - Resize freely
 - Edit directly
 - Markdown preview
-<img width="480" height="358" alt="animation_edited" src="https://github.com/user-attachments/assets/5adcc97c-3e5d-4da2-a801-41992fd5e8e9" />
+<center><img width="480" height="358" alt="animation_edited" src="https://github.com/user-attachments/assets/5adcc97c-3e5d-4da2-a801-41992fd5e8e9" /></center>
 
 The floating notes are independent from the original Markdown content, so moving a note never changes your document layout.
 
@@ -43,8 +42,8 @@ Associate a floating note with any selected text.
 - Highlight linked text
 - Ctrl (Cmd on macOS) + Click linked text to show or hide its note
 - Linked notes remain synchronized when the document is edited
-<img width="1107" height="399" alt="image" src="https://github.com/user-attachments/assets/1646b956-50b8-4b7c-8865-f601d55070db" />
-<img width="714" height="567" alt="image" src="https://github.com/user-attachments/assets/2a22b168-e20e-4ab1-8c23-6e601bac1005" />
+<img width="507" height="199" alt="image" src="https://github.com/user-attachments/assets/1646b956-50b8-4b7c-8865-f601d55070db" />
+<img width="414" height="337" alt="image" src="https://github.com/user-attachments/assets/2a22b168-e20e-4ab1-8c23-6e601bac1005" />
 
 
 ---
@@ -59,7 +58,7 @@ Each floating note supports:
 - Independent position
 
 Settings are available from the context menu.
-<img width="537" height="504" alt="image" src="https://github.com/user-attachments/assets/e58d0e7e-24cf-4204-a1a1-1c35c31ad0ad" /> <img width="540" height="495" alt="image" src="https://github.com/user-attachments/assets/0995ff36-c616-4d29-bea6-69675fac896c" />
+<center><img width="237" height="184" alt="image" src="https://github.com/user-attachments/assets/e58d0e7e-24cf-4204-a1a1-1c35c31ad0ad" /> <img width="210" height="295" alt="image" src="https://github.com/user-attachments/assets/0995ff36-c616-4d29-bea6-69675fac896c" /></center>
 
 ---
 
@@ -69,7 +68,7 @@ The title bar and toolbar are hidden by default.
 
 They only appear when the mouse hovers over the note, providing a clean reading experience.
 
-<img width="399" height="297" alt="image" src="https://github.com/user-attachments/assets/62a6d16a-fd06-4ef6-a593-c13baacca563" /> <img width="387" height="309" alt="image" src="https://github.com/user-attachments/assets/0704d134-013b-4041-88b7-3cfe9cc00583" />
+<center><img width="199" height="197" alt="image" src="https://github.com/user-attachments/assets/62a6d16a-fd06-4ef6-a593-c13baacca563" /> <img width="199" height="197" alt="image" src="https://github.com/user-attachments/assets/0704d134-013b-4041-88b7-3cfe9cc00583" /></center>
 
 
 ---

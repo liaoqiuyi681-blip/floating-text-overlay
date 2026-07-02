@@ -43,6 +43,9 @@ Associate a floating note with any selected text.
 - Highlight linked text
 - Ctrl (Cmd on macOS) + Click linked text to show or hide its note
 - Linked notes remain synchronized when the document is edited
+<img width="1107" height="399" alt="image" src="https://github.com/user-attachments/assets/1646b956-50b8-4b7c-8865-f601d55070db" />
+<img width="714" height="567" alt="image" src="https://github.com/user-attachments/assets/2a22b168-e20e-4ab1-8c23-6e601bac1005" />
+
 
 ---
 
@@ -56,6 +59,7 @@ Each floating note supports:
 - Independent position
 
 Settings are available from the context menu.
+<img width="537" height="504" alt="image" src="https://github.com/user-attachments/assets/e58d0e7e-24cf-4204-a1a1-1c35c31ad0ad" /> <img width="540" height="495" alt="image" src="https://github.com/user-attachments/assets/0995ff36-c616-4d29-bea6-69675fac896c" />
 
 ---
 
@@ -64,6 +68,9 @@ Settings are available from the context menu.
 The title bar and toolbar are hidden by default.
 
 They only appear when the mouse hovers over the note, providing a clean reading experience.
+
+<img width="399" height="297" alt="image" src="https://github.com/user-attachments/assets/62a6d16a-fd06-4ef6-a593-c13baacca563" /> <img width="387" height="309" alt="image" src="https://github.com/user-attachments/assets/0704d134-013b-4041-88b7-3cfe9cc00583" />
+
 
 ---
 
@@ -89,21 +96,6 @@ Examples:
 
 ---
 
-## Screenshots
-
-### Floating Notes
-
-> *(Insert screenshot here)*
-
-### Linked Text
-
-> *(Insert screenshot here)*
-
-### Context Menu
-
-> *(Insert screenshot here)*
-
----
 
 ## Installation
 

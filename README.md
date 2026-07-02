@@ -58,7 +58,7 @@ Each floating note supports:
 - Independent position
 
 Settings are available from the context menu.
-<center><img width="237" height="184" alt="image" src="https://github.com/user-attachments/assets/e58d0e7e-24cf-4204-a1a1-1c35c31ad0ad" /> <img width="210" height="295" alt="image" src="https://github.com/user-attachments/assets/0995ff36-c616-4d29-bea6-69675fac896c" /></center>
+<center><img width="210" height="250" alt="image" src="https://github.com/user-attachments/assets/e58d0e7e-24cf-4204-a1a1-1c35c31ad0ad" /> <img width="210" height="250" alt="image" src="https://github.com/user-attachments/assets/0995ff36-c616-4d29-bea6-69675fac896c" /></center>
 
 ---
 

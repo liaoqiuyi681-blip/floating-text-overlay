@@ -1,86 +1,250 @@
 # Floating Text Overlay
 
-An Obsidian desktop plugin that adds movable, resizable, editable Markdown text labels above a note without changing the note's Markdown body.
+A lightweight Obsidian plugin that lets you create draggable floating notes anywhere on your document without modifying the original Markdown content.
 
-> Status: early prototype / v0.6.0.
+![GitHub release](https://img.shields.io/github/v/release/liaoqiuyi681-blip/floating-text-overlay)
+![License](https://img.shields.io/github/license/liaoqiuyi681-blip/floating-text-overlay)
 
-## v0.6.0 changes
+---
+## Why Floating Text Overlay?
 
-- **No creation-time recovery store.** A new label remains a transient draft until the user edits, moves, resizes, styles, previews, or explicitly links it.
-- **Immediate deletion.** The header delete button, context-menu delete action, and remove-all command now delete without a confirmation dialog.
-- **White default surface.** New labels start with a white background; alternate background colours and transparency remain available from the right-click options.
-- **Direct colour-command bridge.** Editing Toolbar's callback-only `change-font-color` and `change-background-color` commands are intercepted while a label is focused. The plugin reads the chosen Editing Toolbar settings and writes the same `<font color="…">…</font>` and `<mark style="background:…">…</mark>` markup into the label.
-- **Editing Toolbar command interception.** While a label editor is focused, the plugin redirects `editing-toolbar:*` and standard `editor:*` formatting commands to that label. The bridge handles the regular Editing Toolbar buttons directly—bold, italics, strikethrough, underline, highlight, inline code, headings, block quotes, bullet lists, numbered lists, checklists, clear formatting, undo, and redo—and passes compatible editor callbacks a textarea-backed Editor adapter.
-- **Scoped compatibility bridge.** The temporary `workspace.activeEditor` proxy exists only while a label is focused, then the native Obsidian editor state is restored. This avoids keeping a global editor override active after the user returns to a note.
+Traditional Markdown notes are linear.
 
+Sometimes you need annotations that behave like sticky notes without interrupting the document flow.
+
+Floating Text Overlay allows you to:
+
+- Keep your document clean.
+- Place notes exactly where you need them.
+- Link annotations to specific text.
+- Hide notes while preserving their context.
+---
 ## Features
 
-- Add a floating text label from the ribbon icon or Command palette.
-- Edit text directly inside the label. An empty label shows `Type here…`, which disappears as soon as the editor receives focus.
-- Drag a label using the header that appears only when the pointer is over the label.
-- Resize a label by dragging its visible lower-right resize marker.
-- Keep the header and Markdown preview controls hidden until the pointer is over the label or the label editor has focus. When shown, they occupy dedicated layout rows and do not cover the first or last text lines.
-- Right-click a label to change its background color and transparency with live preview.
-- Select Markdown text and then add a label to automatically link the label to that text.
-- Select Markdown text, right-click an existing label, and choose **Link current selection** to create or replace the link.
-- Right-click an already linked label to locate the linked text or remove the link.
-- Highlight linked source text in Live Preview / Source mode without changing the note body.
-- Ctrl+click on highlighted linked text to toggle its associated label between open and closed. On macOS, use Cmd+click.
-- A newly created empty label is a transient draft. It is saved only after you type, move, resize, change appearance, preview it, or explicitly link it.
-- Deletion is immediate and permanent; no confirmation dialog or recovery copy is kept.
-- Store label content, size, position, appearance, and links in plugin data instead of changing the Markdown file.
+### ✨ Floating editable notes
 
-## Editing Toolbar usage
+Create floating note widgets anywhere in the current note.
 
-1. Click inside a floating label and select the text to format.
-2. Keep the label focused.
-3. Click an Editing Toolbar command, for example Bold, Italic, Heading, Highlight, Font color, List, Link, Code, Undo, or Redo.
-4. The resulting Markdown is written into the label, not into the note body.
-5. Use **Preview Markdown** in the label to inspect the rendered result.
+- Drag freely
+- Resize freely
+- Edit directly
+- Markdown preview
+<img width="480" height="358" alt="animation_edited" src="https://github.com/user-attachments/assets/5adcc97c-3e5d-4da2-a801-41992fd5e8e9" />
 
-The bridge is scoped to the label that currently has focus. It temporarily exposes the label as the active editor and restores Obsidian's native editor as soon as focus leaves the label.
+The floating notes are independent from the original Markdown content, so moving a note never changes your document layout.
 
-## Link behavior
+---
 
-A link stores the selected text, source offsets, occurrence index, and surrounding context. While a note is open, its source range is mapped through every CodeMirror document change. When a note is reopened, the plugin first checks the updated offsets, then nearby stored context, then the saved text occurrence. This makes ordinary wording changes resilient while still avoiding modifications to the Markdown file itself.
+### 🔗 Link notes to text
 
-Links work from Obsidian's Markdown editor. Select the text in Live Preview or Source mode before adding or linking a label.
+Associate a floating note with any selected text.
 
-## Local installation for testing
+- Create a linked note directly from a text selection
+- Highlight linked text
+- Ctrl (Cmd on macOS) + Click linked text to show or hide its note
+- Linked notes remain synchronized when the document is edited
 
-1. Build the plugin with `npm install` followed by `npm run build`.
-2. Create this folder in a test vault:
-   ```text
-   <your-vault>/.obsidian/plugins/floating-text-overlay/
-   ```
-3. Copy `main.js`, `manifest.json`, and `styles.css` into that folder.
-4. In Obsidian, enable **Community plugins**, then enable **Floating Text Overlay**.
+---
 
-## Development
+### 🎨 Custom appearance
 
-```bash
-npm install
-npm run dev
+Each floating note supports:
+
+- Background color
+- Transparency
+- Independent size
+- Independent position
+
+Settings are available from the context menu.
+
+---
+
+### 👀 Minimal interface
+
+The title bar and toolbar are hidden by default.
+
+They only appear when the mouse hovers over the note, providing a clean reading experience.
+
+---
+
+### 📝 Markdown support
+
+Each floating note supports Markdown editing and preview.
+
+Examples:
+
+```markdown
+# Heading
+
+**Bold**
+
+*Italic*
+
+- List
+
+> Quote
+
+`Code`
 ```
 
-For development, place this repository directly at:
+---
 
-```text
-<your-test-vault>/.obsidian/plugins/floating-text-overlay/
+## Screenshots
+
+### Floating Notes
+
+> *(Insert screenshot here)*
+
+### Linked Text
+
+> *(Insert screenshot here)*
+
+### Context Menu
+
+> *(Insert screenshot here)*
+
+---
+
+## Installation
+
+### Community Plugins (Coming Soon)
+
+Open
+
+Settings → Community Plugins → Browse
+
+Search:
+
+```
+Floating Text Overlay
 ```
 
-Reload Obsidian after code changes.
+Click **Install**.
 
-## Release assets
+---
 
-Every GitHub release must include these files as release attachments:
+### Manual Installation
 
-- `main.js`
-- `manifest.json`
-- `styles.css`
+Download the latest release from:
 
-The GitHub release tag must exactly match the version in `manifest.json`, such as `0.6.0`.
+https://github.com/liaoqiuyi681-blip/floating-text-overlay/releases
+
+Copy the following files into:
+
+```
+Vault/.obsidian/plugins/floating-text-overlay/
+```
+
+```
+main.js
+manifest.json
+styles.css
+```
+
+Enable the plugin from
+
+```
+Settings
+→ Community Plugins
+```
+
+---
+
+## Usage
+
+### Create a floating note
+
+Click the toolbar icon.
+
+---
+
+### Link a note
+
+1. Select text.
+2. Create a floating note.
+3. The note is automatically linked.
+
+Or:
+
+- Right-click an existing note.
+- Choose **Link Current Selection**.
+
+---
+
+### Edit appearance
+
+Right-click a note.
+
+You can change:
+
+- Background color
+- Transparency
+
+---
+
+### Resize
+
+Drag the resize handle in the bottom-right corner.
+
+---
+
+### Move
+
+Drag the title area of the note.
+
+---
+
+## Roadmap
+
+- [ ] Full CodeMirror editor support
+- [ ] Better Editing Toolbar integration
+- [ ] Canvas support
+- [ ] Excalidraw integration
+- [ ] Mobile optimization
+- [ ] Export floating notes
+
+---
+## Feature Comparison
+
+| Feature                 | Floating Text Overlay | Callout | Comments |
+| ----------------------- | --------------------- | ------- | -------- |
+| Floating notes          | ✅                     | ❌       | ❌        |
+| Link to text            | ✅                     | ❌       | ⚠️       |
+| Independent position    | ✅                     | ❌       | ❌        |
+| Draggable               | ✅                     | ❌       | ❌        |
+| Resizable               | ✅                     | ❌       | ❌        |
+| Adjustable transparency | ✅                     | ❌       | ❌        |
+
+---
+## Compatibility
+
+Tested with
+
+- Obsidian 1.8+
+- Windows
+
+macOS and Linux support is planned.
+
+---
+
+## Known Limitations
+
+The plugin is currently under active development.
+
+Some advanced editor integrations are still being improved.
+
+---
+
+## Contributing
+
+Issues and Pull Requests are welcome.
+
+If you find a bug or have a feature request, please open an issue on GitHub.
+
+---
 
 ## License
 
-MIT.
+MIT License
+
+Copyright (c) 2026 Qiuyi Liao

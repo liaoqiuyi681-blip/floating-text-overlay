@@ -1,10 +1,10 @@
 {
   "id": "floating-text-overlay",
   "name": "Floating Text Overlay",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "minAppVersion": "1.5.0",
-  "description": "Movable, resizable floating Markdown labels with linked text and Editing Toolbar colour/formatting support.",
-  "author": "REPLACE_WITH_YOUR_GITHUB_NAME",
-  "authorUrl": "https://github.com/REPLACE_WITH_YOUR_GITHUB_NAME",
+  "description": "Movable, resizable floating Markdown labels that link to note text and scroll with the document.",
+  "author": "Qiu Yi Liao",
+  "authorUrl": "https://github.com/liaoqiuyi681-blip",
   "isDesktopOnly": true
 }

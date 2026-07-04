@@ -32,8 +32,31 @@ interface FloatingTextBox {
 
 
 interface FloatingTextStore {
-	version: 5;
+	version: 6;
 	notes: Record<string, FloatingTextBox[]>;
+}
+
+/**
+ * Floating labels are stored in document-space coordinates. The overlay is translated
+ * by the Markdown scroller offset so every label stays attached to its note position.
+ */
+interface ScrollMetrics {
+	left: number;
+	top: number;
+	viewportWidth: number;
+	viewportHeight: number;
+	contentWidth: number;
+	contentHeight: number;
+	originX: number;
+	originY: number;
+}
+
+interface LayerScrollBinding {
+	view: MarkdownView;
+	primaryScroller: HTMLElement;
+	abort: AbortController;
+	resizeObserver: ResizeObserver;
+	animationFrame: number | undefined;
 }
 
 interface LinkedTextMarker {
@@ -331,7 +354,7 @@ class FloatingTextareaEditorBridge {
  * an overlay, so moving or resizing a label never changes the Markdown body.
  */
 export default class FloatingTextOverlayPlugin extends Plugin {
-	private store: FloatingTextStore = { version: 5, notes: {} };
+	private store: FloatingTextStore = { version: 6, notes: {} };
 	/** New labels remain in memory until the user actually edits, moves, resizes, styles, or explicitly links them. */
 	private readonly draftBoxes: Record<string, FloatingTextBox[]> = {};
 	private saveTimer: number | undefined;
@@ -351,6 +374,8 @@ export default class FloatingTextOverlayPlugin extends Plugin {
 	private readonly nativeEditingToolbarColorCallbacks = new Map<string, (() => unknown) | undefined>();
 	private contextPopover: HTMLElement | undefined;
 	private contextPopoverAbort: AbortController | undefined;
+	/** Scroll listeners are held per overlay layer and cleaned up when that layer is removed. */
+	private readonly layerScrollBindings = new WeakMap<HTMLElement, LayerScrollBinding>();
 
 	async onload(): Promise<void> {
 		await this.loadStore();
@@ -452,7 +477,7 @@ export default class FloatingTextOverlayPlugin extends Plugin {
 		if (this.commandBridgeInstalled) {
 			return;
 		}
-		const commandManager = this.app.commands as unknown as ObsidianCommandsLike;
+		const commandManager = (this.app as unknown as { commands: ObsidianCommandsLike }).commands;
 		if (typeof commandManager.executeCommandById !== 'function') {
 			return;
 		}
@@ -496,7 +521,7 @@ export default class FloatingTextOverlayPlugin extends Plugin {
 		if (!this.commandBridgeInstalled || !this.nativeExecuteCommandById) {
 			return;
 		}
-		const commandManager = this.app.commands as unknown as ObsidianCommandsLike;
+		const commandManager = (this.app as unknown as { commands: ObsidianCommandsLike }).commands;
 		commandManager.executeCommandById = this.nativeExecuteCommandById;
 		this.nativeExecuteCommandById = undefined;
 		this.commandBridgeInstalled = false;
@@ -509,7 +534,7 @@ export default class FloatingTextOverlayPlugin extends Plugin {
 	 * owns focus. Normal note editing always falls back to the original callback.
 	 */
 	private installEditingToolbarColorCallbackBridge(): void {
-		const commandManager = this.app.commands as unknown as ObsidianCommandsLike;
+		const commandManager = (this.app as unknown as { commands: ObsidianCommandsLike }).commands;
 		const commands = commandManager.commands;
 		if (!commands) {
 			return;
@@ -547,7 +572,7 @@ export default class FloatingTextOverlayPlugin extends Plugin {
 		if (this.nativeEditingToolbarColorCallbacks.size === 0) {
 			return;
 		}
-		const commandManager = this.app.commands as unknown as ObsidianCommandsLike;
+		const commandManager = (this.app as unknown as { commands: ObsidianCommandsLike }).commands;
 		const commands = commandManager.commands;
 		if (commands) {
 			for (const [id, nativeCallback] of this.nativeEditingToolbarColorCallbacks) {
@@ -916,9 +941,9 @@ export default class FloatingTextOverlayPlugin extends Plugin {
 			normalizedNotes[path] = rawBoxes.map((rawBox) => this.normalizeBox(rawBox));
 		}
 
-		// v4 recovery data is intentionally ignored in v5. Existing labels remain intact.
+		// v4 recovery data is intentionally ignored in v6. Existing labels remain intact.
 		this.store = {
-			version: 5,
+			version: 6,
 			notes: normalizedNotes
 		};
 	}
@@ -1074,10 +1099,13 @@ export default class FloatingTextOverlayPlugin extends Plugin {
 
 		const offset = this.getBoxes(file).length * 28;
 		const anchor = this.captureEditorSelection(view);
+		// Store coordinates in document space. A label created partway down a note
+		// therefore stays with that part of the page while the note scrolls.
+		const scroll = this.getViewScrollMetrics(view);
 		this.getOrCreateDraftBoxes(file).push({
 			id: crypto.randomUUID(),
-			x: 72 + offset,
-			y: 72 + offset,
+			x: scroll.left + 72 + offset,
+			y: scroll.top + 72 + offset,
 			width: DEFAULT_WIDTH,
 			height: DEFAULT_HEIGHT,
 			markdown: '',
@@ -1140,6 +1168,7 @@ export default class FloatingTextOverlayPlugin extends Plugin {
 		const layer = document.createElement('div');
 		layer.className = 'floating-text-overlay__layer';
 		host.appendChild(layer);
+		this.bindLayerToDocumentScroll(view, layer);
 
 		for (const box of this.getBoxes(file)) {
 			if (box.visible) {
@@ -1273,6 +1302,144 @@ export default class FloatingTextOverlayPlugin extends Plugin {
 		this.attachResizeBehavior(file, resizeHandle, boxEl, layer, box);
 	}
 
+	/**
+	 * Locate the element that currently owns note scrolling. Source mode commonly uses
+	 * CodeMirror's .cm-scroller, while Reading View may use a view-content ancestor.
+	 */
+	private getScrollableCandidates(view: MarkdownView): HTMLElement[] {
+		const host = view.contentEl;
+		const candidates: HTMLElement[] = [];
+		const add = (element: Element | null): void => {
+			if (element instanceof HTMLElement && !candidates.includes(element)) {
+				candidates.push(element);
+			}
+		};
+
+		add(host.querySelector('.cm-scroller'));
+		add(host.querySelector('.markdown-preview-view'));
+		add(host.querySelector('.view-content'));
+		add(host);
+
+		let parent: HTMLElement | null = host.parentElement;
+		let depth = 0;
+		while (parent && depth < 5) {
+			add(parent);
+			if (parent.classList.contains('workspace-leaf-content')) {
+				break;
+			}
+			parent = parent.parentElement;
+			depth += 1;
+		}
+		return candidates;
+	}
+
+	private isScrollableElement(element: HTMLElement): boolean {
+		const style = window.getComputedStyle(element);
+		const permitsScroll = /(auto|scroll|overlay)/.test(`${style.overflowY} ${style.overflowX}`);
+		return permitsScroll && (element.scrollHeight > element.clientHeight + 1 || element.scrollWidth > element.clientWidth + 1);
+	}
+
+	private getPrimaryScrollContainer(view: MarkdownView): HTMLElement {
+		const candidates = this.getScrollableCandidates(view);
+		return candidates.find((candidate) => this.isScrollableElement(candidate)) ?? view.contentEl;
+	}
+
+	private getScrollMetrics(view: MarkdownView, scroller: HTMLElement): ScrollMetrics {
+		const hostRect = view.contentEl.getBoundingClientRect();
+		const scrollerRect = scroller.getBoundingClientRect();
+		return {
+			left: scroller.scrollLeft,
+			top: scroller.scrollTop,
+			viewportWidth: Math.max(1, scroller.clientWidth),
+			viewportHeight: Math.max(1, scroller.clientHeight),
+			contentWidth: Math.max(scroller.scrollWidth, scroller.clientWidth),
+			contentHeight: Math.max(scroller.scrollHeight, scroller.clientHeight),
+			originX: scrollerRect.left - hostRect.left,
+			originY: scrollerRect.top - hostRect.top
+		};
+	}
+
+	private getViewScrollMetrics(view: MarkdownView): ScrollMetrics {
+		return this.getScrollMetrics(view, this.getPrimaryScrollContainer(view));
+	}
+
+	private getLayerScrollMetrics(layer: HTMLElement): ScrollMetrics {
+		const binding = this.layerScrollBindings.get(layer);
+		if (binding) {
+			return this.getScrollMetrics(binding.view, binding.primaryScroller);
+		}
+		return {
+			left: 0,
+			top: 0,
+			viewportWidth: layer.clientWidth,
+			viewportHeight: layer.clientHeight,
+			contentWidth: layer.clientWidth,
+			contentHeight: layer.clientHeight,
+			originX: 0,
+			originY: 0
+		};
+	}
+
+	private updateLayerScrollTransform(layer: HTMLElement): void {
+		const binding = this.layerScrollBindings.get(layer);
+		if (!binding || !layer.isConnected) {
+			return;
+		}
+		const metrics = this.getScrollMetrics(binding.view, binding.primaryScroller);
+		// `box.x` / `box.y` are document coordinates. This translation keeps a label
+		// aligned with its original text position as the Markdown page moves underneath.
+		layer.style.transform = `translate3d(${metrics.originX - metrics.left}px, ${metrics.originY - metrics.top}px, 0)`;
+	}
+
+	private bindLayerToDocumentScroll(view: MarkdownView, layer: HTMLElement): void {
+		const abort = new AbortController();
+		let scheduleSync: (event?: Event) => void = () => undefined;
+		const binding: LayerScrollBinding = {
+			view,
+			primaryScroller: this.getPrimaryScrollContainer(view),
+			abort,
+			resizeObserver: new ResizeObserver(() => scheduleSync()),
+			animationFrame: undefined
+		};
+		scheduleSync = (event?: Event): void => {
+			const source = event?.currentTarget;
+			if (source instanceof HTMLElement && this.isScrollableElement(source)) {
+				binding.primaryScroller = source;
+			} else {
+				binding.primaryScroller = this.getPrimaryScrollContainer(view);
+			}
+			if (binding.animationFrame !== undefined) {
+				return;
+			}
+			binding.animationFrame = window.requestAnimationFrame(() => {
+				binding.animationFrame = undefined;
+				this.updateLayerScrollTransform(layer);
+			});
+		};
+
+		this.layerScrollBindings.set(layer, binding);
+		for (const candidate of this.getScrollableCandidates(view)) {
+			candidate.addEventListener('scroll', scheduleSync, { passive: true, signal: abort.signal });
+		}
+		window.addEventListener('resize', scheduleSync, { passive: true, signal: abort.signal });
+		binding.resizeObserver.observe(view.contentEl);
+		binding.resizeObserver.observe(binding.primaryScroller);
+		scheduleSync();
+	}
+
+	private disposeLayerScrollBinding(layer: HTMLElement): void {
+		const binding = this.layerScrollBindings.get(layer);
+		if (!binding) {
+			return;
+		}
+		binding.abort.abort();
+		binding.resizeObserver.disconnect();
+		if (binding.animationFrame !== undefined) {
+			window.cancelAnimationFrame(binding.animationFrame);
+		}
+		this.layerScrollBindings.delete(layer);
+	}
+
 	private applyBoxGeometry(boxEl: HTMLElement, box: FloatingTextBox): void {
 		boxEl.style.left = `${box.x}px`;
 		boxEl.style.top = `${box.y}px`;
@@ -1343,8 +1510,9 @@ export default class FloatingTextOverlayPlugin extends Plugin {
 					return;
 				}
 
-				const maxX = Math.max(0, layer.clientWidth - box.width);
-				const maxY = Math.max(0, layer.clientHeight - box.height);
+				const metrics = this.getLayerScrollMetrics(layer);
+				const maxX = Math.max(0, metrics.contentWidth - box.width);
+				const maxY = Math.max(0, metrics.contentHeight - box.height);
 				box.x = this.clamp(startBoxX + moveEvent.clientX - startPointerX, 0, maxX);
 				box.y = this.clamp(startBoxY + moveEvent.clientY - startPointerY, 0, maxY);
 				this.applyBoxGeometry(boxEl, box);
@@ -1397,8 +1565,9 @@ export default class FloatingTextOverlayPlugin extends Plugin {
 					return;
 				}
 
-				const maxWidth = Math.max(MIN_WIDTH, layer.clientWidth - box.x);
-				const maxHeight = Math.max(MIN_HEIGHT, layer.clientHeight - box.y);
+				const metrics = this.getLayerScrollMetrics(layer);
+				const maxWidth = Math.max(MIN_WIDTH, metrics.contentWidth - box.x);
+				const maxHeight = Math.max(MIN_HEIGHT, metrics.contentHeight - box.y);
 				box.width = this.clamp(startWidth + moveEvent.clientX - startPointerX, MIN_WIDTH, maxWidth);
 				box.height = this.clamp(startHeight + moveEvent.clientY - startPointerY, MIN_HEIGHT, maxHeight);
 				this.applyBoxGeometry(boxEl, box);
@@ -2019,10 +2188,12 @@ export default class FloatingTextOverlayPlugin extends Plugin {
 
 	private removeRenderedLayer(host: HTMLElement): void {
 		host.querySelectorAll('.floating-text-overlay__layer').forEach((layer) => {
-			if (this.activeFloatingEditor && layer.contains(this.activeFloatingEditor.textarea)) {
+			const overlayLayer = layer as HTMLElement;
+			if (this.activeFloatingEditor && overlayLayer.contains(this.activeFloatingEditor.textarea)) {
 				this.deactivateFloatingEditorBridge();
 			}
-			layer.remove();
+			this.disposeLayerScrollBinding(overlayLayer);
+			overlayLayer.remove();
 		});
 	}
 

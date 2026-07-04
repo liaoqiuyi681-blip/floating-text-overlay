@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">Floating Text Overlay logo</title>
+  <desc id="desc">A white note card floating over a violet rounded square.</desc>
+  <defs>
+    <linearGradient id="bg" x1="24" y1="20" x2="232" y2="236" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#A78BFA"/>
+      <stop offset="0.48" stop-color="#7C3AED"/>
+      <stop offset="1" stop-color="#4F46E5"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="72" y1="54" x2="184" y2="198" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#F4F3FF"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="170%">
+      <feDropShadow dx="0" dy="11" stdDeviation="8" flood-color="#140B35" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  <rect x="14" y="14" width="228" height="228" rx="54" fill="url(#bg)"/>
+  <circle cx="204" cy="55" r="18" fill="#C4B5FD" fill-opacity="0.48"/>
+  <path d="M73 67c0-10.5 8.5-19 19-19h55l37 37v88c0 10.5-8.5 19-19 19H92c-10.5 0-19-8.5-19-19V67Z" fill="url(#paper)" filter="url(#shadow)"/>
+  <path d="M147 48v27c0 5.5 4.5 10 10 10h27" fill="#EDE9FE"/>
+  <path d="M104 113h48M104 139h41M104 165h31" stroke="#7C3AED" stroke-width="9" stroke-linecap="round"/>
+  <path d="M58 184c7.5 7.5 17 11.5 28 11.5" fill="none" stroke="#DDD6FE" stroke-width="7" stroke-linecap="round" opacity="0.85"/>
+</svg>

@@ -1,0 +1,40 @@
+name: Release Obsidian plugin
+
+on:
+  push:
+    tags:
+      - '*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify release tag matches manifest version
+        run: |
+          node -e "const fs=require('fs'); const manifest=JSON.parse(fs.readFileSync('manifest.json','utf8')); const tag=process.env.GITHUB_REF_NAME; if (manifest.version !== tag) { console.error('Tag '+tag+' must equal manifest version '+manifest.version); process.exit(1); }"
+
+      - name: Build release assets
+        run: npm run build
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" main.js manifest.json styles.css \
+            --title "Floating Text Overlay $GITHUB_REF_NAME" \
+            --generate-notes

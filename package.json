@@ -1,13 +1,14 @@
 {
   "name": "floating-text-overlay",
-  "version": "0.6.0",
-  "description": "An Obsidian plugin that adds movable, resizable linked text overlays to notes.",
+  "version": "0.7.0",
+  "description": "An Obsidian plugin for document-synchronised, movable, resizable linked text overlays.",
   "main": "main.js",
   "type": "module",
   "scripts": {
     "dev": "node esbuild.config.mjs",
     "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
-    "version": "node version-bump.mjs && git add manifest.json versions.json"
+    "version": "node version-bump.mjs && git add manifest.json versions.json",
+    "docs:toc": "node scripts/update-readme-toc.mjs"
   },
   "keywords": [
     "obsidian",

@@ -10,6 +10,9 @@
   min-height: 100%;
   pointer-events: none;
   overflow: visible;
+  transform: translate3d(0, 0, 0);
+  transform-origin: top left;
+  will-change: transform;
 }
 
 .floating-text-overlay__box {

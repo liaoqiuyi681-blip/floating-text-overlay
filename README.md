@@ -1,86 +1,236 @@
-# Floating Text Overlay
+<p align="center">
+  <img src="assets/logo.svg" width="128" alt="Floating Text Overlay logo">
+</p>
 
-An Obsidian desktop plugin that adds movable, resizable, editable Markdown text labels above a note without changing the note's Markdown body.
+<h1 align="center">Floating Text Overlay</h1>
 
-> Status: early prototype / v0.6.0.
+<p align="center">
+  Movable, resizable Markdown annotations that remain attached to the part of an Obsidian note where they matter.
+</p>
 
-## v0.6.0 changes
+<p align="center">
+  <a href="https://github.com/liaoqiuyi681-blip/floating-text-overlay/releases"><img src="https://img.shields.io/github/v/release/liaoqiuyi681-blip/floating-text-overlay?display_name=tag&sort=semver&color=7C3AED" alt="Latest release"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/liaoqiuyi681-blip/floating-text-overlay?color=7C3AED" alt="MIT license"></a>
+  <a href="https://github.com/liaoqiuyi681-blip/floating-text-overlay/issues"><img src="https://img.shields.io/github/issues/liaoqiuyi681-blip/floating-text-overlay?color=7C3AED" alt="Open issues"></a>
+  <img src="https://img.shields.io/badge/Obsidian-Desktop-7C3AED?logo=obsidian&logoColor=white" alt="Obsidian desktop">
+</p>
 
-- **No creation-time recovery store.** A new label remains a transient draft until the user edits, moves, resizes, styles, previews, or explicitly links it.
-- **Immediate deletion.** The header delete button, context-menu delete action, and remove-all command now delete without a confirmation dialog.
-- **White default surface.** New labels start with a white background; alternate background colours and transparency remain available from the right-click options.
-- **Direct colour-command bridge.** Editing Toolbar's callback-only `change-font-color` and `change-background-color` commands are intercepted while a label is focused. The plugin reads the chosen Editing Toolbar settings and writes the same `<font color="…">…</font>` and `<mark style="background:…">…</mark>` markup into the label.
-- **Editing Toolbar command interception.** While a label editor is focused, the plugin redirects `editing-toolbar:*` and standard `editor:*` formatting commands to that label. The bridge handles the regular Editing Toolbar buttons directly—bold, italics, strikethrough, underline, highlight, inline code, headings, block quotes, bullet lists, numbered lists, checklists, clear formatting, undo, and redo—and passes compatible editor callbacks a textarea-backed Editor adapter.
-- **Scoped compatibility bridge.** The temporary `workspace.activeEditor` proxy exists only while a label is focused, then the native Obsidian editor state is restored. This avoids keeping a global editor override active after the user returns to a note.
+<p align="center">
+  <img src="assets/hero-banner.svg" alt="Floating Text Overlay hero banner">
+</p>
 
-## Features
+> [!NOTE]
+> **v0.7.0 introduces document-positioned labels with scroll synchronisation.** A label now moves with the note content instead of remaining fixed in the reading viewport.
 
-- Add a floating text label from the ribbon icon or Command palette.
-- Edit text directly inside the label. An empty label shows `Type here…`, which disappears as soon as the editor receives focus.
-- Drag a label using the header that appears only when the pointer is over the label.
-- Resize a label by dragging its visible lower-right resize marker.
-- Keep the header and Markdown preview controls hidden until the pointer is over the label or the label editor has focus. When shown, they occupy dedicated layout rows and do not cover the first or last text lines.
-- Right-click a label to change its background color and transparency with live preview.
-- Select Markdown text and then add a label to automatically link the label to that text.
-- Select Markdown text, right-click an existing label, and choose **Link current selection** to create or replace the link.
-- Right-click an already linked label to locate the linked text or remove the link.
-- Highlight linked source text in Live Preview / Source mode without changing the note body.
-- Ctrl+click on highlighted linked text to toggle its associated label between open and closed. On macOS, use Cmd+click.
-- A newly created empty label is a transient draft. It is saved only after you type, move, resize, change appearance, preview it, or explicitly link it.
-- Deletion is immediate and permanent; no confirmation dialog or recovery copy is kept.
-- Store label content, size, position, appearance, and links in plugin data instead of changing the Markdown file.
+<!-- TOC:start -->
+<details>
+<summary><strong>Table of contents</strong></summary>
 
-## Editing Toolbar usage
+- [Why this plugin](#why-this-plugin)
+- [Feature set](#feature-set)
+- [Interface preview](#interface-preview)
+- [Scroll synchronisation](#scroll-synchronisation)
+- [Installation](#installation)
+  - [Manual installation — current release path](#manual-installation-current-release-path)
+  - [Community Plugins — pending submission](#community-plugins-pending-submission)
+- [Usage](#usage)
+  - [Create a label](#create-a-label)
+  - [Link a label to source text](#link-a-label-to-source-text)
+  - [Move and resize](#move-and-resize)
+  - [Change appearance](#change-appearance)
+  - [Preview Markdown](#preview-markdown)
+- [Editing Toolbar compatibility](#editing-toolbar-compatibility)
+- [Storage model](#storage-model)
+- [Development](#development)
+  - [Prerequisites](#prerequisites)
+  - [Run locally](#run-locally)
+  - [Build a release](#build-a-release)
+- [Testing](#testing)
+- [Repository assets](#repository-assets)
+- [Contributing](#contributing)
+- [License](#license)
 
-1. Click inside a floating label and select the text to format.
-2. Keep the label focused.
-3. Click an Editing Toolbar command, for example Bold, Italic, Heading, Highlight, Font color, List, Link, Code, Undo, or Redo.
-4. The resulting Markdown is written into the label, not into the note body.
-5. Use **Preview Markdown** in the label to inspect the rendered result.
+</details>
+<!-- TOC:end -->
 
-The bridge is scoped to the label that currently has focus. It temporarily exposes the label as the active editor and restores Obsidian's native editor as soon as focus leaves the label.
+## Why this plugin
 
-## Link behavior
+Markdown notes are inherently linear. Research, revision, planning, and review work often require short contextual annotations that should sit beside an idea without interrupting the original document flow.
 
-A link stores the selected text, source offsets, occurrence index, and surrounding context. While a note is open, its source range is mapped through every CodeMirror document change. When a note is reopened, the plugin first checks the updated offsets, then nearby stored context, then the saved text occurrence. This makes ordinary wording changes resilient while still avoiding modifications to the Markdown file itself.
+Floating Text Overlay adds editable note widgets above a Markdown note. A widget can be moved, resized, linked to selected text, hidden and reopened from that text, and styled independently. The original Markdown file remains untouched.
 
-Links work from Obsidian's Markdown editor. Select the text in Live Preview or Source mode before adding or linking a label.
+## Feature set
 
-## Local installation for testing
+| Capability | What it does |
+| --- | --- |
+| Floating labels | Add an editable annotation anywhere over the current note. |
+| Document-positioned scrolling | Labels use document-space coordinates and move with the page when you scroll. |
+| Text links | Select source text, create a label, and retain an interactive link between the two. |
+| Context toggle | `Ctrl` + click linked text on Windows/Linux, or `Cmd` + click on macOS, to show or hide associated labels. |
+| Flexible layout | Drag with the header and resize from the lower-right handle. |
+| Minimal interface | Controls stay hidden until the label is hovered or focused. |
+| Appearance controls | Set a label background colour and transparency from the right-click menu. |
+| Markdown preview | Switch a label between Markdown source and a rendered preview. |
+| Safe note body | Label content and geometry are stored in plugin data, not inserted into the Markdown file. |
 
-1. Build the plugin with `npm install` followed by `npm run build`.
-2. Create this folder in a test vault:
+## Interface preview
+
+These editable SVG previews establish the intended dark-theme visual language. Before submitting to Obsidian Community Plugins, replace them with captures from a local test vault that show the released interface exactly.
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/images/dark-floating-label.svg" alt="Dark-theme floating label preview"><br><strong>Editable floating label</strong></td>
+    <td width="50%"><img src="docs/images/dark-linked-text.svg" alt="Dark-theme linked text preview"><br><strong>Linked source text</strong></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/images/dark-context-menu.svg" alt="Dark-theme context menu preview"><br><strong>Right-click appearance controls</strong></td>
+    <td width="50%"><img src="docs/images/scroll-sync-demo.gif" alt="Animated scrolling demonstration"><br><strong>Scroll synchronisation</strong></td>
+  </tr>
+</table>
+
+## Scroll synchronisation
+
+A label's coordinates are now measured relative to the note document rather than the visible window.
+
+- Create a label halfway down a long note: it remains beside that document region.
+- Scroll the note: the label moves up or down with the corresponding Markdown content.
+- Drag and resize operations respect the scrollable document dimensions, not only the visible viewport.
+- The scroll listener is scoped to each rendered Markdown view and is removed when the view or the plugin unloads.
+
+## Installation
+
+### Manual installation — current release path
+
+1. Download the latest **Release** from this repository.
+2. Create the folder below inside your vault:
+
    ```text
-   <your-vault>/.obsidian/plugins/floating-text-overlay/
+   <vault>/.obsidian/plugins/floating-text-overlay/
    ```
-3. Copy `main.js`, `manifest.json`, and `styles.css` into that folder.
-4. In Obsidian, enable **Community plugins**, then enable **Floating Text Overlay**.
+
+3. Copy these release assets into that folder:
+
+   ```text
+   main.js
+   manifest.json
+   styles.css
+   ```
+
+4. In Obsidian, open **Settings → Community plugins** and enable **Floating Text Overlay**.
+
+### Community Plugins — pending submission
+
+The plugin is not yet listed in Obsidian's Community Plugins directory. Once it has passed the submission review, users will be able to install it from **Settings → Community plugins → Browse**.
+
+## Usage
+
+### Create a label
+
+Open a Markdown note and use either the ribbon icon or the command:
+
+```text
+Floating Text Overlay: Add floating text box
+```
+
+A newly created, untouched empty label is only a transient draft. It is saved after a real action such as typing, dragging, resizing, styling, previewing, or explicitly linking text.
+
+### Link a label to source text
+
+1. In Live Preview or Source mode, select non-empty text in the Markdown editor.
+2. Create a floating label. The label is linked automatically.
+3. Alternatively, select text, right-click an existing label, and choose **Link current selection**.
+4. Use `Ctrl` + click / `Cmd` + click on the highlighted linked text to toggle the label.
+
+### Move and resize
+
+- Hover the label to reveal its header.
+- Drag the header to move the label.
+- Drag the lower-right corner handle to resize it.
+
+### Change appearance
+
+Right-click a label to change its background colour and transparency. New labels start with a white surface.
+
+### Preview Markdown
+
+Click **Preview Markdown** from the label footer. Click **Back to edit** to return to the source editor.
+
+## Editing Toolbar compatibility
+
+This plugin includes an experimental bridge for [Editing Toolbar](https://github.com/PKM-er/obsidian-editing-toolbar). Keep the floating label focused, select text inside it, then invoke a toolbar command.
+
+The bridge is intended for common Markdown operations such as bold, italic, headings, lists, inline code, undo/redo, font colour, and background colour. Since Editing Toolbar is a separate community plugin with its own command registration and UI modes, verify the exact buttons you use in your vault before release. Track results in [TESTING.md](TESTING.md).
+
+## Storage model
+
+Floating label state is stored in the plugin's Obsidian data file, keyed by note path. The following values are persisted after a meaningful edit:
+
+- label text
+- document-space position
+- width and height
+- background colour and opacity
+- visibility state
+- optional linked-text anchor and contextual metadata
+
+Moving or resizing a label does **not** write, reflow, or insert content into the note's Markdown body.
 
 ## Development
+
+### Prerequisites
+
+- Node.js 18 or later
+- Obsidian desktop
+- A separate test vault
+
+### Run locally
 
 ```bash
 npm install
 npm run dev
 ```
 
-For development, place this repository directly at:
+During development, place the repository at:
 
 ```text
-<your-test-vault>/.obsidian/plugins/floating-text-overlay/
+<test-vault>/.obsidian/plugins/floating-text-overlay/
 ```
 
-Reload Obsidian after code changes.
+Reload Obsidian after a build. The folder name must match the plugin `id` in `manifest.json`.
 
-## Release assets
+### Build a release
 
-Every GitHub release must include these files as release attachments:
+```bash
+npm run build
+npm run docs:toc
+```
 
-- `main.js`
-- `manifest.json`
-- `styles.css`
+A GitHub release must attach:
 
-The GitHub release tag must exactly match the version in `manifest.json`, such as `0.6.0`.
+```text
+main.js
+manifest.json
+styles.css
+```
+
+The release tag must match `manifest.json`, for example `0.7.0`.
+
+## Testing
+
+Follow the full workflow in [TESTING.md](TESTING.md). The scroll-specific regression test should be run in both Live Preview and Reading View with a note long enough to scroll through multiple screen heights.
+
+## Repository assets
+
+| Asset | Purpose |
+| --- | --- |
+| [`assets/logo.svg`](assets/logo.svg) | Repository avatar, release asset, and future directory branding. |
+| [`assets/hero-banner.svg`](assets/hero-banner.svg) | GitHub README header. |
+| [`docs/images/scroll-sync-demo.gif`](docs/images/scroll-sync-demo.gif) | Visual explanation of the v0.7.0 scroll behaviour. |
+| [`docs/images/*.svg`](docs/images) | Editable dark-theme preview set. |
+
+## Contributing
+
+Open an issue with a reproducible vault setup, Obsidian version, operating system, theme, enabled editor plugins, and screenshots or screen recording. Pull requests are welcome for isolated, tested improvements.
 
 ## License
 
-MIT.
+MIT © 2026 Qiu Yi Liao

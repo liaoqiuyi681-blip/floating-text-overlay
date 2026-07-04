@@ -16,7 +16,8 @@
 </p>
 
 <p align="center">
-  <img src="assets/hero-banner.svg" alt="Floating Text Overlay hero banner">
+ <img width="1983" height="793" alt="0" src="https://github.com/user-attachments/assets/ff4235ed-2ef2-4351-8e88-47ed2b41c23c" />
+
 </p>
 
 > [!NOTE]
@@ -79,15 +80,15 @@ These editable SVG previews establish the intended dark-theme visual language. B
 
 <table>
   <tr>
-    <td width="50%"><img width="470" height="350" alt="1" src="https://github.com/user-attachments/assets/f899a567-8889-439c-89cd-d29ebe6aa0a2" />
+    <td width="50%"><img width="370" height="270" alt="1" src="https://github.com/user-attachments/assets/f899a567-8889-439c-89cd-d29ebe6aa0a2" />
 <br><strong>Editable floating label</strong></td>
-    <td width="50%"><img width="470" height="350" alt="2" src="https://github.com/user-attachments/assets/c9c48f25-b0ba-4b46-aaf1-2bec077eeb1d" />
+    <td width="50%"><img width="370" height="270" alt="2" src="https://github.com/user-attachments/assets/c9c48f25-b0ba-4b46-aaf1-2bec077eeb1d" />
 <br><strong>Linked source text</strong></td>
   </tr>
   <tr>
-    <td width="50%"><img width="470" height="350" alt="3" src="https://github.com/user-attachments/assets/7beed427-4353-44fb-89c0-9977febf26ca" />
+    <td width="50%"><img width="370" height="270" alt="3" src="https://github.com/user-attachments/assets/7beed427-4353-44fb-89c0-9977febf26ca" />
 <br><strong>Right-click appearance controls</strong></td>
-    <td width="50%"><img width="470" height="350" alt="4" src="https://github.com/user-attachments/assets/29efc15f-2dab-462b-9328-a003dc3e8944" />
+    <td width="50%"><img width="370" height="270" alt="4" src="https://github.com/user-attachments/assets/29efc15f-2dab-462b-9328-a003dc3e8944" />
 <br><strong>Scroll synchronisation</strong></td>
   </tr>
 </table>

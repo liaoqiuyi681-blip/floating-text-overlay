@@ -79,12 +79,16 @@ These editable SVG previews establish the intended dark-theme visual language. B
 
 <table>
   <tr>
-    <td width="50%"><img src="docs/images/dark-floating-label.svg" alt="Dark-theme floating label preview"><br><strong>Editable floating label</strong></td>
-    <td width="50%"><img src="docs/images/dark-linked-text.svg" alt="Dark-theme linked text preview"><br><strong>Linked source text</strong></td>
+    <td width="50%"><img width="470" height="350" alt="1" src="https://github.com/user-attachments/assets/f899a567-8889-439c-89cd-d29ebe6aa0a2" />
+<br><strong>Editable floating label</strong></td>
+    <td width="50%"><img width="470" height="350" alt="2" src="https://github.com/user-attachments/assets/c9c48f25-b0ba-4b46-aaf1-2bec077eeb1d" />
+<br><strong>Linked source text</strong></td>
   </tr>
   <tr>
-    <td width="50%"><img src="docs/images/dark-context-menu.svg" alt="Dark-theme context menu preview"><br><strong>Right-click appearance controls</strong></td>
-    <td width="50%"><img src="docs/images/scroll-sync-demo.gif" alt="Animated scrolling demonstration"><br><strong>Scroll synchronisation</strong></td>
+    <td width="50%"><img width="470" height="350" alt="3" src="https://github.com/user-attachments/assets/7beed427-4353-44fb-89c0-9977febf26ca" />
+<br><strong>Right-click appearance controls</strong></td>
+    <td width="50%"><img width="470" height="350" alt="4" src="https://github.com/user-attachments/assets/29efc15f-2dab-462b-9328-a003dc3e8944" />
+<br><strong>Scroll synchronisation</strong></td>
   </tr>
 </table>
 
@@ -233,4 +237,4 @@ Open an issue with a reproducible vault setup, Obsidian version, operating syste
 
 ## License
 
-MIT © 2026 Qiu Yi Liao
+MIT © 2026 Qiuyi Liao

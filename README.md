@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/liaoqiuyi681-blip/floating-text-overlay/releases">![Uploading brand.png…]()
+  <a href="https://github.com/liaoqiuyi681-blip/floating-text-overlay/releases">
 </a>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/liaoqiuyi681-blip/floating-text-overlay?color=7C3AED" alt="MIT license"></a>
   <a href="https://github.com/liaoqiuyi681-blip/floating-text-overlay/issues"><img src="https://img.shields.io/github/issues/liaoqiuyi681-blip/floating-text-overlay?color=7C3AED" alt="Open issues"></a>

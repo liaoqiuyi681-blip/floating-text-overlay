@@ -1,5 +1,6 @@
 <p align="center">
-  <img src="assets/logo.svg" width="128" alt="Floating Text Overlay logo">
+  <img width="128" height="128" alt="brand" src="https://github.com/user-attachments/assets/8bf4e43f-fad2-4224-b640-f78b659eb4ca" />
+
 </p>
 
 <h1 align="center">Floating Text Overlay</h1>
@@ -9,7 +10,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/liaoqiuyi681-blip/floating-text-overlay/releases"><img src="https://img.shields.io/github/v/release/liaoqiuyi681-blip/floating-text-overlay?display_name=tag&sort=semver&color=7C3AED" alt="Latest release"></a>
+  <a href="https://github.com/liaoqiuyi681-blip/floating-text-overlay/releases">![Uploading brand.png…]()
+</a>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/liaoqiuyi681-blip/floating-text-overlay?color=7C3AED" alt="MIT license"></a>
   <a href="https://github.com/liaoqiuyi681-blip/floating-text-overlay/issues"><img src="https://img.shields.io/github/issues/liaoqiuyi681-blip/floating-text-overlay?color=7C3AED" alt="Open issues"></a>
   <img src="https://img.shields.io/badge/Obsidian-Desktop-7C3AED?logo=obsidian&logoColor=white" alt="Obsidian desktop">
